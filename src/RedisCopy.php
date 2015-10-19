@@ -58,9 +58,13 @@ class RedisCopy
                 };
             }
 
-            $ttl = max(0, (int)$this->source->ttl($key));
-            $serializedValue = $this->source->dump($key);
-            $this->destination->restore($key, $ttl, $serializedValue);
+            try {
+                $ttl = max(0, (int)$this->source->ttl($key));
+                $serializedValue = $this->source->dump($key);
+                $this->destination->restore($key, $ttl, $serializedValue);
+            } catch (Exception $e){
+                $this->out(PHP_EOL . 'ERROR: ' . $key . PHP_EOL);
+            }
 
             if($step++ % 100 == 0){
                 $this->out(PHP_EOL . $hundred++. ': ');

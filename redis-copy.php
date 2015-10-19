@@ -6,7 +6,8 @@ $rc = new RedisCopy($argv[1], $argv[2]);
 $rc->setIgnoredPrefixes(array(
     'ipligence_',
     'aba_',
-    'zip_'
+    'zip_',
+    'integraCreditHardReject'
 ));
 
 $rc->copy();
