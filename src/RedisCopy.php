@@ -44,37 +44,39 @@ class RedisCopy
         // retrieve all keys from source redis
         $keys = $this->source->keys('*');
 
-        $this->out("Processing %d REDIS keys ...", count($keys), true);
+        $this->out("Processing %d REDIS keys ...", array(count($keys)));
 
+        // set initial values for counters
         $hundred = 0;
         $step = 0;
 
+        // loop through all keys to migrate them from source to destination redis
         foreach($keys AS $key){
             // check for ignored keys and skip the key if it should be ignored
             foreach($this->ignoredPrefixes AS $ignoredPrefix){
                 if(strpos($key, $ignoredPrefix) !== false){
-                    $this->out('.');
+                    $this->out('-');    // skipped key will print a dash
                     continue 2; // continue with the next key
                 };
             }
 
-            try {
-                $ttl = max(0, (int)$this->source->ttl($key));
-                $serializedValue = $this->source->dump($key);
-                $this->destination->restore($key, $ttl, $serializedValue);
-            } catch (Exception $e){
-                $this->out(PHP_EOL . 'ERROR: ' . $key . PHP_EOL);
-            }
-
-            if($step++ % 100 == 0){
+            //
+            if($step++ % 100 == 0){ // add a line break for each 100 transferred keys
                 $this->out(PHP_EOL . $hundred++. ': ');
             }
-            $this->out('o');
 
+
+            try {
+                $ttl = max(0, (int)$this->source->ttl($key));   // find TTL of the key in the source
+                $serializedValue = $this->source->dump($key);   // dump the value from the source
+                $this->destination->restore($key, $ttl, $serializedValue);  // and restore it in the destination
+                $this->out('o');
+            } catch (Exception $e){
+                $this->out('X');    // print X on error
+            }
         }
 
         $this->out(PHP_EOL . PHP_EOL);
-
     }
 
     private function out($message, $params = array()){
