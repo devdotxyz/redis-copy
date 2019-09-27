@@ -22,7 +22,7 @@ class RedisCopy
     /**
      * @var array keys with these prefixes will be ignored and not transferred
      */
-    private $ignoredPrefixes = array();
+    private $ignoredPrefixes = [];
 
     /**
      * @param $sourceConfig connection URI string (tcp://10.0.0.1:6379)
@@ -79,7 +79,7 @@ class RedisCopy
         $this->out(PHP_EOL . PHP_EOL);
     }
 
-    private function out($message, $params = array()){
+    private function out($message, $params = []){
         echo sprintf($message, $params);
     }
 
