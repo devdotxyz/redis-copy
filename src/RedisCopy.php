@@ -44,7 +44,7 @@ class RedisCopy
         // retrieve all keys from source redis
         $keys = $this->source->keys('*');
 
-        $this->out("Processing %d REDIS keys ...", array(count($keys)));
+        $this->out("Processing %d REDIS keys ...", count($keys));
 
         // set initial values for counters
         $hundred = 0;
